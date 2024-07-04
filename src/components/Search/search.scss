@@ -1,0 +1,38 @@
+.container {
+  margin-top: 40px;
+
+  &__search {
+    margin: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: rgb(237, 237, 237) 0px 10px 10px;
+    justify-content: space-between;
+
+    &--input {
+      border: none;
+      outline: none;
+      font-size: 20px;
+      flex: 1 1 0%;
+      padding-left: 10px;
+      background-color: #fff;
+    }
+
+    &--find {
+      background-color: rgb(255, 83, 80);
+      height: 50px;
+      width: 50px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: rgba(255, 83, 80, 0.533) 5px 5px 15px;
+      color: white;
+      font-size: 25px;
+      font-weight: 800;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}

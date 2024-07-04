@@ -1,0 +1,7 @@
+body {
+  background: url(pokeball-icon.png) -180px -80px no-repeat rgb(246, 248, 252);
+  padding: 0px 5vw;
+}
+.col-8 .row{
+  justify-content: space-around;
+}
