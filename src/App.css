@@ -5,3 +5,6 @@ body {
 .col-8 .row{
   justify-content: space-around;
 }
+.bot{
+  margin-bottom: 10px;
+}

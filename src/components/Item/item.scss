@@ -11,6 +11,7 @@
     border-radius: 20px;
     box-shadow: rgb(237, 237, 237) 0px 10px 10px;
     padding: 15px 0;
+
     &__image {
         display: flex;
         justify-content: center;
@@ -23,6 +24,22 @@
             image-rendering: pixelated;
             transition-duration: 100ms;
         }
+    }
+
+    &__types {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    &__type {
+        border-radius: 5px;
+        padding: 3px 7px;
+        color: black;
+        margin: 5px;
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        opacity: 0.8;
     }
 
     &__id {
@@ -41,12 +58,15 @@
 
         h3 {
             margin: 0;
+            font-size: 24px;
+            font-family: 700;
         }
     }
 
-    &:hover{
+    &:hover {
         border: 2px solid #E0E0E0;
     }
+
     &:hover &__image img {
         transform: scale(1.2);
     }

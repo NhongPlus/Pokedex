@@ -1,6 +1,162 @@
-.des{
-    background-color: #000;
+.description {
     border-radius: 20px;
-    width: 100px;
-    height: 100px;
+    width: 23%;
+    text-align: center;
+    border: 2px solid white;
+    transition-duration: 100ms;
+    background-color: #FFFFFF;
+    box-shadow: rgb(237, 237, 237) 0px 10px 10px;
+    position: fixed;
+    top: 70px;
+    padding: 5px;
+    justify-content: center;
+
+    &__image {
+        margin-top: -65px;
+        width: 25%;
+        image-rendering: pixelated;
+    }
+
+    &__entry {
+        padding: 0px 20px;
+        color: #011030;
+        margin: 15px 0;
+        text-align: center;
+
+        &--text {
+            color: #8F9396;
+        }
+    }
+
+    &__image--no-pokemon {
+        margin-top: -100px;
+    }
+
+    &__number {
+        // Add styles for the number if necessary
+    }
+
+    &__name {
+        color: #011030;
+        margin: 5px;
+        text-align: center;
+    }
+
+    &__type-list {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__type-item {
+        border-radius: 5px;
+        padding: 3px 7px;
+        color: black;
+        margin: 5px;
+        margin-top: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    h2 {
+        color: #011030;
+        margin: 5px;
+        text-align: center;
+        font-size: 24px;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    &__stats {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: 10px;
+        justify-content: space-around;
+
+        &__box {
+            background: #F6F8FC;
+            padding: 5px;
+            border-radius: 30px;
+            margin: 5px;
+        }
+        &__box-index {
+            font-size: 13.28px;
+            font-weight: 600;
+        }
+
+        &__total-label {
+            background-color: #7195DC;
+            border-radius: 50%;
+            height: 25px;
+            width: 25px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+        }
+        &__total {
+            background: #88AAEA;
+            padding: 5px;
+            border-radius: 30px;
+            margin: 5px;
+            font-size: 13.28px;
+            font-weight: 600;
+        }
+
+        &__box-name {
+
+            border-radius: 50%;
+            height: 25px;
+            width: 25px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+        }
+    }
+
+    p {
+        margin: 0;
+    }
+
+    &__bmi {
+        margin-top: 20px;
+        display: flex;
+
+        h4 {
+            font-size: 16px;
+        }
+
+        &--height {
+            width: 100%;
+        }
+
+        &--weight {
+            width: 100%;
+        }
+
+        &--box {
+            background-color: #F6F8FC;
+            padding: 8px 0;
+            border-radius: 30px;
+            margin: 5px;
+        }
+    }
+
+    &__abilities {
+        display: flex;
+        &--box {
+            background-color: #F6F8FC;
+            padding: 5px 0;
+            border-radius: 30px;
+            margin: 5px;
+            width: 100%;
+            text-align: center;
+        }
+    }
 }

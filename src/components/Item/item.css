@@ -24,6 +24,21 @@
   image-rendering: pixelated;
   transition-duration: 100ms;
 }
+.pokemon-card__types {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pokemon-card__type {
+  border-radius: 5px;
+  padding: 3px 7px;
+  color: black;
+  margin: 5px;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  opacity: 0.8;
+}
 .pokemon-card__id {
   color: rgb(143, 147, 150);
 }
@@ -38,6 +53,8 @@
 }
 .pokemon-card__name h3 {
   margin: 0;
+  font-size: 24px;
+  font-family: 700;
 }
 .pokemon-card:hover {
   border: 2px solid #E0E0E0;
