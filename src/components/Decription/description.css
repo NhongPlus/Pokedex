@@ -7,14 +7,15 @@
   background-color: #FFFFFF;
   box-shadow: rgb(237, 237, 237) 0px 10px 10px;
   position: fixed;
+  z-index: 1;
   top: 70px;
   padding: 5px;
-  justify-content: center;
 }
 .description__image {
   margin-top: -65px;
   width: 25%;
   image-rendering: pixelated;
+  z-index: 2;
 }
 .description__entry {
   padding: 0px 20px;
@@ -32,8 +33,10 @@
   color: #011030;
   margin: 5px;
   text-align: center;
+  text-transform: capitalize;
 }
 .description__type-list {
+  text-transform: capitalize;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -135,6 +138,16 @@
   margin: 5px;
   width: 100%;
   text-align: center;
+}
+.description__evolution {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.description__evolution-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /*# sourceMappingURL=description.css.map */

@@ -30,7 +30,7 @@ function App() {
     useEffect(() => {
         fetchData(nextUrl);
     }, []);
-
+    
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -55,7 +55,7 @@ function App() {
     }, [nextUrl, isLoading]);
 
     return (
-        <MyContext.Provider value={{ id, setId }}>
+        <MyContext.Provider value={{ id, setId , data}}>
             <div className="container">
                 <div className="row">
                     <div className="col-8">

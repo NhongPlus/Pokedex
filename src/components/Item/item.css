@@ -38,6 +38,7 @@
   font-weight: 600;
   font-size: 14px;
   opacity: 0.8;
+  text-transform: capitalize;
 }
 .pokemon-card__id {
   color: rgb(143, 147, 150);
@@ -50,6 +51,7 @@
   color: rgb(1, 16, 48);
   margin: 5px;
   font-weight: bold;
+  text-transform: capitalize;
 }
 .pokemon-card__name h3 {
   margin: 0;

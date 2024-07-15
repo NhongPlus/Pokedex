@@ -1,6 +1,8 @@
 import "./item.css";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { MyContext } from "../../App";
+import { MyContext } from "../../App"
+import { typeColors } from "../../function/handleColor"
+import { replaceSpace , TachSo } from "../../function/handleText"
 // Item là dumb component hay smart component
 function Item(props) {
     const knowColor = useRef(null);
@@ -8,21 +10,10 @@ function Item(props) {
     const { datafetch } = props;
     const [pokemonTypes, setPokemonTypes] = useState([]);
 
-    function TachSo(url) {
-        const parts = url.split("/");
-        return parts[parts.length - 2];
-    }
-
-    const VietHoa = (string) => {
-        // CSS có thuộc tính để viết hoa chữ cái đầu. Search text-transform
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    };
-
-    function Show() {
-        // Tên function cần tường minh hơn và sẽ viết theo camelCase
+    function showPokemonDetails() {
         const url = props.datafetch.url;
         const parts = url.split("/");
-        const id = parts[parts.length - 2]; // số ở api
+        const id = parts[parts.length - 2]; // Số trong đường dẫn API
         setId(id);
     }
 
@@ -36,36 +27,11 @@ function Item(props) {
         fetchTypes();
     }, [datafetch.url]);
 
-    const typeColors = {
-        // có thể cho ra ngoài components vì nếu để trong components mỗi khi re-render sẽ tạo ra 1 const typeColors
-        normal: "#BCBCAC",
-        fighting: "#BC5442",
-        flying: "#669AFF",
-        poison: "#AB549A",
-        ground: "#DEBC54",
-        rock: "#BCAC66",
-        bug: "#ABBC1C",
-        ghost: "#6666BC",
-        steel: "#ABACBC",
-        fire: "#FF421C",
-        water: "#2F9AFF",
-        grass: "#78CD54",
-        electric: "#FFCD30",
-        psychic: "#FF549A",
-        ice: "#78DEFF",
-        dragon: "#7866EF",
-        dark: "#785442",
-        fairy: "#FFACFF",
-        shadow: "#0E2E4C",
-    };
-
     return (
-        <div className="pokemon-card" onClick={Show}>
+        <div className="pokemon-card" onClick={showPokemonDetails}>
             <div className="pokemon-card__image">
                 <img
-                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${TachSo(
-                        datafetch.url
-                    )}.png`}
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${TachSo(datafetch.url)}.png`}
                     alt={datafetch.name}
                 />
             </div>
@@ -73,7 +39,7 @@ function Item(props) {
                 <span>N° {TachSo(datafetch.url)}</span>
             </div>
             <div className="pokemon-card__name" ref={knowColor}>
-                <h3>{VietHoa(datafetch.name)}</h3>
+                <h3>{replaceSpace(datafetch.name)}</h3>
             </div>
             <div className="pokemon-card__types">
                 {pokemonTypes.map((typeInfo, index) => (
@@ -84,7 +50,7 @@ function Item(props) {
                             backgroundColor: typeColors[typeInfo.type.name],
                         }}
                     >
-                        {VietHoa(typeInfo.type.name)}
+                        {typeInfo.type.name}
                     </div>
                 ))}
             </div>

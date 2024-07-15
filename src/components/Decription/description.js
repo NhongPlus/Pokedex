@@ -1,102 +1,115 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './description.css';
 import { MyContext } from '../../App';
+import { mapName, replaceSpace } from "../../function/handleText"
+import { typeColors, ListMau } from "../../function/handleColor"
 
 function Description() {
-    const ListMau = {
-        'hp': '#DF2140',
-        'attack': '#FF994D',
-        'defense': '#EECD3D',
-        'special-attack': '#85DDFF',
-        'special-defense': '#96DA83',
-        'speed': '#FB94A8'
-    }
-
-    const typeColors = {
-        'normal': '#BCBCAC',
-        'fighting': '#BC5442',
-        'flying': '#669AFF',
-        'poison': '#AB549A',
-        'ground': '#DEBC54',
-        'rock': '#BCAC66',
-        'bug': '#ABBC1C',
-        'ghost': '#6666BC',
-        'steel': '#ABACBC',
-        'fire': '#FF421C',
-        'water': '#2F9AFF',
-        'grass': '#78CD54',
-        'electric': '#FFCD30',
-        'psychic': '#FF549A',
-        'ice': '#78DEFF',
-        'dragon': '#7866EF',
-        'dark': '#785442',
-        'fairy': '#FFACFF',
-        'shadow': '#0E2E4C'
-    };
     const { id } = useContext(MyContext);
     const [infor, setInfor] = useState(null);
-    const [des, setDes] = useState(null);  // Sửa lại kiểu dữ liệu từ số nguyên (0) sang null
+    const [des, setDes] = useState(null);
+    const [level, setLevel] = useState(null);
+    const [evolution, setEvolution] = useState([]);
 
-    const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
+    const getUrlList = (chain) => {
+        const speciesList = [];
+        const traverseEvolutionChain = (chain) => {
+            const species = chain.species.url;
+            speciesList.push(species);
+            if (chain.evolves_to && chain.evolves_to.length > 0) {
+                chain.evolves_to.forEach(evolution => {
+                    traverseEvolutionChain(evolution);
+                });
+            }
+        };
+        traverseEvolutionChain(chain);
+        return speciesList;
     };
-    const lower = (string) => {
-        return string.toLowerCase();
-    }
-    const Text = (text) => {
-        return text.replace(/\u000c/g, ' ').replace(/move/g, 'move');
+    const getLevelList = (chain) => {
+        const levelList = [];
+        const traverseEvolutionChain = (chain) => {
+            if (chain.evolution_details && chain.evolution_details.length > 0) {
+                chain.evolution_details.forEach(detail => {
+                    if (detail.min_level === null) {
+                        levelList.push('?');
+                    }
+                    else {
+                        levelList.push(detail.min_level)
+                    }
+                });
+            }
+            if (chain.evolves_to && chain.evolves_to.length > 0) {
+                chain.evolves_to.forEach(evolution => {
+                    traverseEvolutionChain(evolution);
+                });
+            }
+        };
+        traverseEvolutionChain(chain);
+        return levelList;
     };
-    const mapName = (name) => {
-        switch (name.toLowerCase()) {
-            case 'attack':
-                return 'ATK';
-            case 'defense':
-                return 'DEF';
-            case 'special-attack':
-                return 'SpA';
-            case 'special-defense':
-                return 'SpD';
-            case 'speed':
-                return 'SPD';
-            default:
-                return name
+
+    useEffect(() => {
+        const fetchEvo = async (evoChainId) => {
+            try {
+                const response = await fetch(`https://pokeapi.co/api/v2/evolution-chain/${evoChainId}`);
+                const jsonData = await response.json();
+                setLevel(getLevelList(jsonData.chain));
+                setEvolution(getUrlList(jsonData.chain));
+
+            } catch (error) {
+                console.error('Error fetching evolution data:', error);
+            }
+        };
+        const fetchText = async () => {
+            try {
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+                const json = await res.json();
+                setDes(json);
+                const evoChainUrl = json.evolution_chain.url;
+                const evoChainId = evoChainUrl.split('/').filter(Boolean).pop();
+                fetchEvo(evoChainId);
+            } catch (error) {
+                console.error('Error fetching species data:', error);
+            }
+        };
+
+        if (id) {
+            fetchText();
         }
-    };
+    }, [id]);
+    console.log(level);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`); // cái này là tổng quan con poke
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
                 const jsonData = await response.json();
-                console.log(jsonData.stats);
-                console.log(jsonData.abilities);
-
                 setInfor(jsonData);
-
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching Pokemon data:', error);
             }
         };
-        if (id) { // nếu id có giá trị thì mới gọi 
+
+        if (id) {
             fetchData();
         }
     }, [id]);
 
-    useEffect(() => {
-        const fetchText = async () => {
-            try {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`); // cái này cụ thể hơn chỉ số bla bla
-                const json = await res.json();
-                setDes(json);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-        if (id) { // nếu id có giá trị thì mới gọi 
-            fetchText();
+    async function handleLink(url) {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            const finalLink = await fetch(data.varieties[0].pokemon.url);
+            const susces = await finalLink.json();
+            setInfor(susces);
+        } catch (error) {
+            console.error('Error fetching data:', error);
         }
-    }, [id]);
-
+        console.log(evolution);
+    }
+    const extractIdFromUrl = (url) => {
+        const parts = url.split('/').filter(Boolean);
+        return parts[parts.length - 1];
+    };
     return (
         <div className="description">
             {infor ? (
@@ -106,8 +119,8 @@ function Description() {
                         src={infor.sprites.versions['generation-v']['black-white'].animated.front_default}
                         alt={infor.name}
                     />
-                    <p className="description__number">N°{id}</p>
-                    <h2 className="description__name">{capitalizeFirstLetter(infor.name)}</h2>
+                    <p className="description__number">N°{infor.id}</p>
+                    <h2 className="description__name">{replaceSpace(infor.name)}</h2>
                     <div className="description__type-list">
                         {infor.types.map((typeInfo, index) => (
                             <div
@@ -115,15 +128,13 @@ function Description() {
                                 className={`description__type-item ${typeInfo.type.name}`}
                                 style={{ backgroundColor: typeColors[typeInfo.type.name] }}
                             >
-                                {capitalizeFirstLetter(typeInfo.type.name)}
+                                {replaceSpace(typeInfo.type.name)}
                             </div>
                         ))}
                     </div>
                     <div className='description__entry'>
                         <h4>Pokedex Entry</h4>
-                        <div className='description__entry--text'>
-                            {des && des.flavor_text_entries[0] && Text(des.flavor_text_entries[0].flavor_text)}
-                        </div>
+                        <div className='description__entry--text'></div>
                     </div>
                     <div className='row center'>
                         <div className='description__bmi'>
@@ -141,13 +152,11 @@ function Description() {
                         <h4>Abilities</h4>
                         <div className='description__abilities'>
                             <div className='description__abilities--box'>
-                                {infor.abilities.map((item, index) => {
-                                    return <div key={index}
-                                    className='description__abilities--box-igredient'
-                                    >
-                                        {item.ability.name}
-                                    </div>;
-                                })}
+                                {infor.abilities.map((item, index) => (
+                                    <div key={index} className='description__abilities--box-igredient'>
+                                        {replaceSpace(item.ability.name)}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -170,8 +179,24 @@ function Description() {
                             </div>
                         </div>
                     </div>
-                    <div className='row center'>
-                        <h4>Evolution</h4>
+                    <h4>Evolution</h4>
+                    <div className='description__row description__row--center'>
+                        <div className='description__evolution'>
+                            {evolution.map((speciesUrl, index) => {
+                                const speciesId = extractIdFromUrl(speciesUrl);
+                                return (
+                                    <div key={index} className='description__evolution-item'>
+                                        <img
+                                            onClick={() => handleLink(speciesUrl)}
+                                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${speciesId}.png`}
+                                            alt={`Evolution ${index}`}
+                                            className='description__evolution-image'
+                                        />
+                                        <div className='description__evolution-level'>{level[index]}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </>
             ) : (

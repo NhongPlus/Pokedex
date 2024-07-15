@@ -7,14 +7,14 @@
     background-color: #FFFFFF;
     box-shadow: rgb(237, 237, 237) 0px 10px 10px;
     position: fixed;
+    z-index: 1;
     top: 70px;
     padding: 5px;
-    justify-content: center;
-
     &__image {
         margin-top: -65px;
         width: 25%;
         image-rendering: pixelated;
+        z-index: 2;
     }
 
     &__entry {
@@ -40,9 +40,11 @@
         color: #011030;
         margin: 5px;
         text-align: center;
+        text-transform: capitalize;
     }
-
+    
     &__type-list {
+        text-transform: capitalize;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -158,5 +160,21 @@
             width: 100%;
             text-align: center;
         }
+    }
+    &__evolution{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        &--image{
+            
+        }
+        &--level{
+
+        }
+    }
+    &__evolution-item{
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
