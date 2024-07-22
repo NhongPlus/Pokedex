@@ -1,22 +1,20 @@
 // search.jsx
 import "./search.css";
-import { useRef, useContext, useState } from "react"; 
-import { MyContext } from "../../App";
+import { useRef, useState } from "react"; 
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import Item from "../Item/item";
 
 function Search() {
     const text = useRef('');
-    const { data } = useContext(MyContext);
     const [searchResults, setSearchResults] = useState([]); 
 
     const takeCha = () => {
-        const inputValue = text.current.value.toLowerCase(); 
-        const locData = data.filter(element => element.name.toLowerCase().includes(inputValue)); 
-        locData.forEach(element => {
-            console.log(element.name);
-        });
-        setSearchResults(locData); 
+        // const inputValue = text.current.value.toLowerCase(); 
+        // const locData = data.filter(element => element.name.toLowerCase().includes(inputValue)); 
+        // locData.forEach(element => {
+        //     console.log(element.name);
+        // });
+        // setSearchResults(locData); 
     };
 
     return (

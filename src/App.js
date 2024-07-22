@@ -2,41 +2,74 @@ import "./App.css";
 import Description from "./components/Decription/description"; // Cài spellChecker để soát lỗi chính tả
 import Item from "./components/Item/item";
 import Search from "./components/Search/search";
-import { createContext, useEffect, useState, useRef } from "react";
+import { createContext , useEffect, useState, useRef } from "react";
 
-export const MyContext = createContext(); // Context ở đây để làm j thế?
+export const MyContext = createContext();
 
 function App() {
-    const [data, setData] = useState([]);
-    const [nextUrl, setNextUrl] = useState("https://pokeapi.co/api/v2/pokemon");
-    const [id, setId] = useState(null);
-    const botRef = useRef(null);
+    const urlPokemon = 'https://pokeapi.co/api/v2/pokemon/?limit=898';
+    const urlType = 'https://pokeapi.co/api/v2/type';
+    const [pokemonData, setPokemonData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [number , setNumber] = useState(null);
+    const botRef = useRef(null);
 
-    const fetchData = async (url) => {
+    const fetchPokemonData = async () => {
         try {
-            setIsLoading(true);
-            const response = await fetch(url);
-            const jsonData = await response.json();
-            setData((prevData) => [...prevData, ...jsonData.results]);
-            setNextUrl(jsonData.next);
-            setIsLoading(false);
+            const res = await fetch(urlPokemon); // lấy hết 898 cái , lưu trong 1 cái mảng nhưng chỉ lấy ra 20 cái ( nhưng vẫn là render mà )
+            const data = await res.json();
+            return data.results;
         } catch (error) {
-            console.error("Error fetching data:", error);
-            setIsLoading(false);
+            console.error(error);
+            return [];
         }
     };
 
+    const fetchPokemonTypes = async (pokemon) => {
+        const pokemonWithType = [];
+
+        for (let i = 1; i <= 18; i++) {
+            const res = await fetch(`${urlType}/${i}`);
+            const data = await res.json();
+            const typeName = data.name;
+
+            data.pokemon.forEach((p) => {
+                const matchedPokemon = pokemon.find((pokemon) => pokemon.url === p.pokemon.url);
+                if (matchedPokemon) {
+                    const existingPokemon = pokemonWithType.find(p => p.name === matchedPokemon.name);
+                    if (existingPokemon) {
+                        existingPokemon.types.push(typeName);
+                    } else {
+                        pokemonWithType.push({
+                            name: matchedPokemon.name,
+                            url: matchedPokemon.url,
+                            types: [typeName]
+                        });
+                    }
+                }
+            });
+        }
+
+        setPokemonData(pokemonWithType);
+    };
+
     useEffect(() => {
-        fetchData(nextUrl);
+        const loadData = async () => {
+            setIsLoading(true);
+            const pokemon = await fetchPokemonData();
+            await fetchPokemonTypes(pokemon);
+            setIsLoading(false);
+        };
+
+        loadData();
     }, []);
-    
+
     useEffect(() => {
-        const observer = new IntersectionObserver(
+        const observer = new IntersectionObserver( // chỉ lấy 20 cái 1 
             (entries) => {
                 entries.forEach((entry) => {
-                    if (entry.isIntersecting && nextUrl && !isLoading) {
-                        fetchData(nextUrl);
+                    if (entry.isIntersecting && !isLoading) {
+                        console.log('oke');
                     }
                 });
             },
@@ -52,33 +85,45 @@ function App() {
                 observer.unobserve(botRef.current);
             }
         };
-    }, [nextUrl, isLoading]);
-
+    }, [isLoading]);
+    pokemonData.forEach((pokemon) => {
+        const regex = /\/(\d+)\/$/;
+        const match = pokemon.url.match(regex);
+        if (match) {
+            pokemon.order = parseInt(match[1]);
+        }
+    });
+    pokemonData.sort((a, b) => a.order - b.order);
+    
     return (
-        <MyContext.Provider value={{ id, setId , data}}>
-            <div className="container">
-                <div className="row">
-                    <div className="col-8">
-                        <Search />
-                    </div>
-                    <div className="col-4"></div>
+        <MyContext.Provider value={{ number, setNumber }} >
+        <div className="container">
+            <div className="row">
+                <div className="col-8">
+                    <Search />
                 </div>
-                <div className="row">
-                    <div className="col-8">
-                        <div className="row">
-                            {data.map((pokemon, index) => (
-                                <div key={index} className="col-4">
-                                    <Item datafetch={pokemon} />
-                                </div>
-                            ))}
-                            <div className="bot" ref={botRef}></div>
-                        </div>
+                <div className="col-4"></div>
+            </div>
+            <div className="row">
+                <div className="col-8">
+                    <div className="row">
+                        {pokemonData.map((element ) => (
+                            <div className="col-4" key={element.order}>
+                                <Item 
+                                    dataProps={element.name} 
+                                    types={element.types} 
+                                    id={element.order}
+                                />
+                            </div>
+                        ))}
+                        <div className="bot" ref={botRef}></div>
                     </div>
-                    <div className="col-4">
-                        <Description />
-                    </div>
+                </div>
+                <div className="col-4">
+                    <Description />
                 </div>
             </div>
+        </div>
         </MyContext.Provider>
     );
 }

@@ -1,57 +1,39 @@
 import "./item.css";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { MyContext } from "../../App"
-import { typeColors } from "../../function/handleColor"
-import { replaceSpace , TachSo } from "../../function/handleText"
-// Item là dumb component hay smart component
+import React, { useContext } from 'react';
+import { replaceSpace } from "../../function/handleText";
+import { typeColors } from "../../function/handleColor";
+import { MyContext } from '../../App';
 function Item(props) {
-    const knowColor = useRef(null);
-    const { setId } = useContext(MyContext);
-    const { datafetch } = props;
-    const [pokemonTypes, setPokemonTypes] = useState([]);
+    const { dataProps, types, id } = props;
 
-    function showPokemonDetails() {
-        const url = props.datafetch.url;
-        const parts = url.split("/");
-        const id = parts[parts.length - 2]; // Số trong đường dẫn API
-        setId(id);
+    const { setNumber } = useContext(MyContext);
+    
+    function handleClick() {
+        setNumber(id)
     }
-
-    useEffect(() => {
-        // fetch màu
-        const fetchTypes = async () => {
-            const res = await fetch(datafetch.url);
-            const data1 = await res.json();
-            setPokemonTypes(data1.types);
-        };
-        fetchTypes();
-    }, [datafetch.url]);
-
     return (
-        <div className="pokemon-card" onClick={showPokemonDetails}>
+        <div className="pokemon-card" onClick={handleClick}>
             <div className="pokemon-card__image">
                 <img
-                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${TachSo(datafetch.url)}.png`}
-                    alt={datafetch.name}
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`}
+                    alt={dataProps}
                 />
             </div>
             <div className="pokemon-card__id">
-                <span>N° {TachSo(datafetch.url)}</span>
+                <span>N° {id}</span>
             </div>
-            <div className="pokemon-card__name" ref={knowColor}>
-                <h3>{replaceSpace(datafetch.name)}</h3>
+            <div className="pokemon-card__name">
+                <h3>{replaceSpace(dataProps)}</h3>
             </div>
             <div className="pokemon-card__types">
-                {pokemonTypes.map((typeInfo, index) => (
-                    <div
-                        key={index}
+                {types && types.map((type, typeIndex) => (
+                    <span
+                        key={typeIndex}
                         className="pokemon-card__type"
-                        style={{
-                            backgroundColor: typeColors[typeInfo.type.name],
-                        }}
+                        style={{ backgroundColor: typeColors[type.toLowerCase()] }}
                     >
-                        {typeInfo.type.name}
-                    </div>
+                        {type}
+                    </span>
                 ))}
             </div>
         </div>

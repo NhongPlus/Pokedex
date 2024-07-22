@@ -1,11 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './description.css';
-import { MyContext } from '../../App';
 import { mapName, replaceSpace } from "../../function/handleText"
 import { typeColors, ListMau } from "../../function/handleColor"
+import { MyContext } from '../../App';
 
 function Description() {
-    const { id } = useContext(MyContext);
+
+    const { number } = useContext(MyContext);
+
+    console.log(number);
     const [infor, setInfor] = useState(null);
     const [des, setDes] = useState(null);
     const [level, setLevel] = useState(null);
@@ -62,7 +65,7 @@ function Description() {
         };
         const fetchText = async () => {
             try {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${id}`);
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${number}`);
                 const json = await res.json();
                 setDes(json);
                 const evoChainUrl = json.evolution_chain.url;
@@ -73,15 +76,14 @@ function Description() {
             }
         };
 
-        if (id) {
+        if (number) {
             fetchText();
         }
-    }, [id]);
-    console.log(level);
+    }, [number]);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
                 const jsonData = await response.json();
                 setInfor(jsonData);
             } catch (error) {
@@ -89,10 +91,10 @@ function Description() {
             }
         };
 
-        if (id) {
+        if (number) {
             fetchData();
         }
-    }, [id]);
+    }, [number]);
 
     async function handleLink(url) {
         try {
@@ -154,7 +156,7 @@ function Description() {
                             <div className='description__abilities--box'>
                                 {infor.abilities.map((item, index) => (
                                     <div key={index} className='description__abilities--box-igredient'>
-                                        {replaceSpace(item.ability.name)}
+                                        { index < 2 && (replaceSpace(item.ability.name))}
                                     </div>
                                 ))}
                             </div>
@@ -182,8 +184,9 @@ function Description() {
                     <h4>Evolution</h4>
                     <div className='description__row description__row--center'>
                         <div className='description__evolution'>
-                            {evolution.map((speciesUrl, index) => {
+                            {evolution.slice(0, 3).map((speciesUrl, index) => {
                                 const speciesId = extractIdFromUrl(speciesUrl);
+                                console.log(speciesId);
                                 return (
                                     <div key={index} className='description__evolution-item'>
                                         <img
@@ -192,7 +195,9 @@ function Description() {
                                             alt={`Evolution ${index}`}
                                             className='description__evolution-image'
                                         />
-                                        <div className='description__evolution-level'>{level[index]}</div>
+                                        {index < 2 && (
+                                            <div className='description__evolution-level'>{level[index]}</div>
+                                        )}
                                     </div>
                                 );
                             })}
