@@ -1,15 +1,15 @@
 import "./item.css";
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 import { replaceSpace } from "../../function/handleText";
 import { typeColors } from "../../function/handleColor";
-import { MyContext } from '../../App';
+import { MyContext } from "../../App";
 function Item(props) {
     const { dataProps, types, id } = props;
 
     const { setNumber } = useContext(MyContext);
-    
+
     function handleClick() {
-        setNumber(id)
+        setNumber(id);
     }
     return (
         <div className="pokemon-card" onClick={handleClick}>
@@ -26,15 +26,18 @@ function Item(props) {
                 <h3>{replaceSpace(dataProps)}</h3>
             </div>
             <div className="pokemon-card__types">
-                {types && types.map((type, typeIndex) => (
-                    <span
-                        key={typeIndex}
-                        className="pokemon-card__type"
-                        style={{ backgroundColor: typeColors[type.toLowerCase()] }}
-                    >
-                        {type}
-                    </span>
-                ))}
+                {types &&
+                    types.map((type, typeIndex) => (
+                        <span
+                            key={typeIndex}
+                            className="pokemon-card__type"
+                            style={{
+                                backgroundColor: typeColors[type.toLowerCase()],
+                            }}
+                        >
+                            {type}
+                        </span>
+                    ))}
             </div>
         </div>
     );
