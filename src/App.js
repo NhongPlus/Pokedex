@@ -2,24 +2,26 @@ import "./App.css";
 import Description from "./components/Decription/description"; // Cài spellChecker để soát lỗi chính tả
 import Item from "./components/Item/item";
 import Search from "./components/Search/search";
-import { createContext, useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { FaAngleUp } from "react-icons/fa6";
 
-export const MyContext = createContext();
 const ITEM_PER_PAGE = 20;
+
 function App() {
     const urlPokemon = "https://pokeapi.co/api/v2/pokemon/?limit=898";
     const urlType = "https://pokeapi.co/api/v2/type";
     const [pokemonData, setPokemonData] = useState([]);
     const [selectedNumber, setSelectedNumber] = useState(undefined);
     const [currentPage, setCurrentPage] = useState(0);
+    const [memoryPage, setmemoryPage] = useState(0);
     const [renderedData, setRenderedData] = useState([]);
+    const [findPoke, setFindPoke] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [number, setNumber] = useState(null);
     const botRef = useRef(null);
 
     const fetchPokemonData = async () => {
         try {
-            const res = await fetch(urlPokemon); // lấy hết 898 cái , lưu trong 1 cái mảng nhưng chỉ lấy ra 20 cái ( nhưng vẫn là render mà )
+            const res = await fetch(urlPokemon);
             const data = await res.json();
             return data.results;
         } catch (error) {
@@ -65,11 +67,9 @@ function App() {
             }
         });
         pokemonWithType.sort((a, b) => a.order - b.order);
-        setPokemonData(pokemonWithType);
 
-        setRenderedData(
-            pokemonWithType.slice(currentPage * 20, (currentPage + 1) * 20 - 1)
-        );
+        setPokemonData(pokemonWithType);
+        setRenderedData(pokemonWithType.slice(0, ITEM_PER_PAGE));
     };
 
     useEffect(() => {
@@ -84,43 +84,61 @@ function App() {
     }, []);
 
     useEffect(() => {
-        const observer = new IntersectionObserver( // chỉ lấy 20 cái 1
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting && !isLoading) {
-                        let page = currentPage;
-                        const nextPage = page + 1;
-                        setCurrentPage(nextPage);
-                    }
-                });
-            },
-            { threshold: 1.0 }
-        );
+        if (findPoke === '') {
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting && !isLoading) {
+                            let a = 0;
+                            setCurrentPage((prevPage) => prevPage + 1);
+                            setmemoryPage(a++);
+                        }
+                    });
+                },
+                { threshold: 1.0 }
+            );
 
-        if (botRef.current) {
-            observer.observe(botRef.current);
-        }
-
-        return () => {
             if (botRef.current) {
-                observer.unobserve(botRef.current);
+                observer.observe(botRef.current);
             }
-        };
-    }, [isLoading]);
+
+            return () => {
+                if (botRef.current) {
+                    observer.unobserve(botRef.current);
+                }
+            };
+        }
+    }, [isLoading, findPoke]);
+
     useEffect(() => {
-        const newArr = [
-            ...renderedData,
-            ...pokemonData.slice(currentPage * 20, (currentPage + 1) * 20 - 1),
-        ];
-        setRenderedData(newArr);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage]);
+        if (currentPage > 0 && findPoke === '') {
+            const newArr = [...renderedData, ...pokemonData.slice(currentPage * ITEM_PER_PAGE, (currentPage + 1) * ITEM_PER_PAGE)];
+            setRenderedData(newArr);
+        }
+    }, [currentPage, findPoke]);
+
+    useEffect(() => {
+        if (findPoke !== '') {
+            const filteredData = pokemonData.filter((item) =>
+                item.name.toLowerCase().includes(findPoke.toLowerCase())
+            );
+            setRenderedData(filteredData);
+        } else {
+            setRenderedData(pokemonData.slice(0, ITEM_PER_PAGE));
+            setCurrentPage(memoryPage);
+        }
+    }, [findPoke, pokemonData]);
+
+    function backToTop(){
+        window.scrollTo(0, 0);
+    }
+
     return (
-        <MyContext.Provider value={{ number, setNumber }}>
+        <>
             <div className="container">
                 <div className="row">
                     <div className="col-8">
-                        <Search />
+                        <Search setFindPoke={setFindPoke} />
                     </div>
                     <div className="col-4"></div>
                 </div>
@@ -134,20 +152,21 @@ function App() {
                                             dataProps={element?.name}
                                             types={element?.types}
                                             id={element?.order}
+                                            setSelectedNumber={setSelectedNumber}
                                         />
                                     </div>
-                                ) : // <div></div>
-                                null;
+                                ) : null;
                             })}
                             <div className="bot" ref={botRef}></div>
                         </div>
                     </div>
                     <div className="col-4">
-                        <Description />
+                        <Description selectedNumber={selectedNumber} />
                     </div>
                 </div>
             </div>
-        </MyContext.Provider>
+            <FaAngleUp className="abce" onClick={backToTop}/>
+        </>
     );
 }
 

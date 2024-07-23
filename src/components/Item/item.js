@@ -1,15 +1,11 @@
 import "./item.css";
-import React, { useContext } from "react";
-import { replaceSpace } from "../../function/handleText";
+import { replaceSpace} from "../../function/handleText";
 import { typeColors } from "../../function/handleColor";
-import { MyContext } from "../../App";
 function Item(props) {
-    const { dataProps, types, id } = props;
-
-    const { setNumber } = useContext(MyContext);
+    const { dataProps, types, id , setSelectedNumber } = props;
 
     function handleClick() {
-        setNumber(id);
+        setSelectedNumber(id);
     }
     return (
         <div className="pokemon-card" onClick={handleClick}>

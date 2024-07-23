@@ -1,14 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './description.css';
-import { mapName, replaceSpace } from "../../function/handleText"
+import { mapName, replaceSpace, Text } from "../../function/handleText"
 import { typeColors, ListMau } from "../../function/handleColor"
-import { MyContext } from '../../App';
 
-function Description() {
-
-    const { number } = useContext(MyContext);
-
-    console.log(number);
+function Description(props) {
+    const { selectedNumber } = props;
     const [infor, setInfor] = useState(null);
     const [des, setDes] = useState(null);
     const [level, setLevel] = useState(null);
@@ -65,8 +61,9 @@ function Description() {
         };
         const fetchText = async () => {
             try {
-                const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${number}`);
+                const res = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${selectedNumber}`);
                 const json = await res.json();
+                console.log(json);
                 setDes(json);
                 const evoChainUrl = json.evolution_chain.url;
                 const evoChainId = evoChainUrl.split('/').filter(Boolean).pop();
@@ -76,14 +73,14 @@ function Description() {
             }
         };
 
-        if (number) {
+        if (selectedNumber) {
             fetchText();
         }
-    }, [number]);
+    }, [selectedNumber]);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${number}`);
+                const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${selectedNumber}`);
                 const jsonData = await response.json();
                 setInfor(jsonData);
             } catch (error) {
@@ -91,10 +88,10 @@ function Description() {
             }
         };
 
-        if (number) {
+        if (selectedNumber) {
             fetchData();
         }
-    }, [number]);
+    }, [selectedNumber]);
 
     async function handleLink(url) {
         try {
@@ -112,6 +109,7 @@ function Description() {
         const parts = url.split('/').filter(Boolean);
         return parts[parts.length - 1];
     };
+    console.log(des);
     return (
         <div className="description">
             {infor ? (
@@ -121,7 +119,7 @@ function Description() {
                         src={infor.sprites.versions['generation-v']['black-white'].animated.front_default}
                         alt={infor.name}
                     />
-                    <p className="description__number">N°{infor.id}</p>
+                    <p className="description__1">N°{infor.id}</p>
                     <h2 className="description__name">{replaceSpace(infor.name)}</h2>
                     <div className="description__type-list">
                         {infor.types.map((typeInfo, index) => (
@@ -136,7 +134,9 @@ function Description() {
                     </div>
                     <div className='description__entry'>
                         <h4>Pokedex Entry</h4>
-                        <div className='description__entry--text'></div>
+                        <div className='description__entry--text'>
+                            {Text(des?.flavor_text_entries.find((item) => item.language.name === 'en')?.flavor_text)}
+                        </div>
                     </div>
                     <div className='row center'>
                         <div className='description__bmi'>
@@ -156,7 +156,7 @@ function Description() {
                             <div className='description__abilities--box'>
                                 {infor.abilities.map((item, index) => (
                                     <div key={index} className='description__abilities--box-igredient'>
-                                        { index < 2 && (replaceSpace(item.ability.name))}
+                                        {index < 2 && (replaceSpace(item.ability.name))}
                                     </div>
                                 ))}
                             </div>
@@ -186,7 +186,6 @@ function Description() {
                         <div className='description__evolution'>
                             {evolution.slice(0, 3).map((speciesUrl, index) => {
                                 const speciesId = extractIdFromUrl(speciesUrl);
-                                console.log(speciesId);
                                 return (
                                     <div key={index} className='description__evolution-item'>
                                         <img
