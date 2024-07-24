@@ -95,9 +95,9 @@ function Description(props) {
 
     async function handleLink(url) {
         try {
-            const response = await fetch(url);
+            const response = await fetch(url); // fecth 1 lần
             const data = await response.json();
-            const finalLink = await fetch(data.varieties[0].pokemon.url);
+            const finalLink = await fetch(data.varieties[0].pokemon.url); // lần 2 lấy ra https://pokeapi.co/api/v2/pokemon
             const susces = await finalLink.json();
             setInfor(susces);
         } catch (error) {
@@ -109,7 +109,6 @@ function Description(props) {
         const parts = url.split('/').filter(Boolean);
         return parts[parts.length - 1];
     };
-    console.log(des);
     return (
         <div className="description">
             {infor ? (
@@ -119,7 +118,7 @@ function Description(props) {
                         src={infor.sprites.versions['generation-v']['black-white'].animated.front_default}
                         alt={infor.name}
                     />
-                    <p className="description__1">N°{infor.id}</p>
+                    <p className="description__id">N°{infor.id}</p>
                     <h2 className="description__name">{replaceSpace(infor.name)}</h2>
                     <div className="description__type-list">
                         {infor.types.map((typeInfo, index) => (
@@ -154,16 +153,16 @@ function Description(props) {
                         <h4>Abilities</h4>
                         <div className='description__abilities'>
                             <div className='description__abilities--box'>
-                                {infor.abilities.map((item, index) => (
+                                {infor.abilities.slice(0, 2).map((item, index) => (
                                     <div key={index} className='description__abilities--box-igredient'>
-                                        {index < 2 && (replaceSpace(item.ability.name))}
+                                        {replaceSpace(item.ability.name)}
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
                     <div className='row center'>
-                        <h4 className='row__title'>Stats</h4>
+                        <h4>Stats</h4>
                         <div className='description__stats'>
                             {infor.stats.map((statItem, index) => (
                                 <div key={index} className='description__stats__box'>
@@ -182,7 +181,7 @@ function Description(props) {
                         </div>
                     </div>
                     <h4>Evolution</h4>
-                    <div className='description__row description__row--center'>
+                    <div className='row center'>
                         <div className='description__evolution'>
                             {evolution.slice(0, 3).map((speciesUrl, index) => {
                                 const speciesId = extractIdFromUrl(speciesUrl);
@@ -191,11 +190,12 @@ function Description(props) {
                                         <img
                                             onClick={() => handleLink(speciesUrl)}
                                             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${speciesId}.png`}
-                                            alt={`Evolution ${index}`}
-                                            className='description__evolution-image'
+                                            className='description__evolution--image'
                                         />
-                                        {index < 2 && (
-                                            <div className='description__evolution-level'>{level[index]}</div>
+                                        {index < level.length && (
+                                            <div className='description__evolution--level'>
+                                                {level[index] !== '?' ? `Lv. ${level[index]}` : '?'}
+                                            </div>
                                         )}
                                     </div>
                                 );

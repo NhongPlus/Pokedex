@@ -1,5 +1,5 @@
 import "./App.css";
-import Description from "./components/Decription/description"; // Cài spellChecker để soát lỗi chính tả
+import Description from "./components/Description/description"; // Cài spellChecker để soát lỗi chính tả
 import Item from "./components/Item/item";
 import Search from "./components/Search/search";
 import { useEffect, useState, useRef } from "react";
@@ -13,7 +13,7 @@ function App() {
     const [pokemonData, setPokemonData] = useState([]);
     const [selectedNumber, setSelectedNumber] = useState(undefined);
     const [currentPage, setCurrentPage] = useState(0);
-    const [memoryPage, setmemoryPage] = useState(0);
+    const [savedPage, setSavedPage] = useState(0); // lưu trữ số trang đã render
     const [renderedData, setRenderedData] = useState([]);
     const [findPoke, setFindPoke] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -89,9 +89,15 @@ function App() {
                 (entries) => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting && !isLoading) {
-                            let a = 0;
-                            setCurrentPage((prevPage) => prevPage + 1);
-                            setmemoryPage(a++);
+                            setCurrentPage((prevPage) => { // lưu cả 2 giá trị luôn 
+                                const newPage = prevPage + 1;
+                                setSavedPage(newPage);  // lưu vào setSavedPage 
+                                return newPage; // lưu vào setCurrentPage luôn giá trị đó 
+                            });
+                            // let a = 0; tại vì mỗi khi mà lăn chuột xuống thì a lại khởi tạo = 0 => không đúng 
+                            // setCurrentPage((prevPage) => prevPage + 1); // trả về prevPage + 1 
+                            // setmemoryPage(++a); // luôn = 1
+
                         }
                     });
                 },
@@ -108,7 +114,13 @@ function App() {
                 }
             };
         }
+
     }, [isLoading, findPoke]);
+    
+    useEffect(() => {
+        console.log(savedPage);
+        console.log(currentPage);
+    },[savedPage , currentPage])
 
     useEffect(() => {
         if (currentPage > 0 && findPoke === '') {
@@ -118,18 +130,19 @@ function App() {
     }, [currentPage, findPoke]);
 
     useEffect(() => {
-        if (findPoke !== '') {
+        if (findPoke !== '') { // nêu mà cái thanh ipnut nó có chữ
             const filteredData = pokemonData.filter((item) =>
                 item.name.toLowerCase().includes(findPoke.toLowerCase())
             );
-            setRenderedData(filteredData);
+            setRenderedData(filteredData); // thì renderData sẽ truyền vào 1 mảng có những tên trùng
         } else {
-            setRenderedData(pokemonData.slice(0, ITEM_PER_PAGE));
-            setCurrentPage(memoryPage);
+            setRenderedData(pokemonData.slice(0, ITEM_PER_PAGE * (savedPage + 1))); 
+            // nếu mà thanh input rỗng thì cắt ròi +1 , vì ban đầu render ra 20 con nhưng page vẫn là 0
         }
+
     }, [findPoke, pokemonData]);
 
-    function backToTop(){
+    function backToTop() {
         window.scrollTo(0, 0);
     }
 
@@ -165,7 +178,7 @@ function App() {
                     </div>
                 </div>
             </div>
-            <FaAngleUp className="abce" onClick={backToTop}/>
+            <FaAngleUp className="abce" onClick={backToTop} />
         </>
     );
 }
